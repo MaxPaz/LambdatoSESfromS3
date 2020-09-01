@@ -1,0 +1,26 @@
+def lambda_handler(event, context):
+    # TODO implement
+    import boto3
+    import botocore
+    import json
+    ses_client = boto3.client('ses')
+    s3 = boto3.client('s3')
+    obj = s3.get_object(Bucket='BucketName', Key='FileName.txt')
+    #contents = data['Body'].read().decode('utf-8')
+    contents = obj['Body'].read().decode('utf-8')
+    print(contents)
+    send_mail_response = ses_client.send_email(
+				Source='Origin@Email.com',
+				Destination={
+					'ToAddresses': ['Email@destination.com']
+				},
+				Message={
+					'Subject': {
+						'Data': 'The body of the email comes from S3 bucket'
+					},
+					'Body': {
+						'Text': {
+							'Data': contents}
+					}
+				}
+			)
